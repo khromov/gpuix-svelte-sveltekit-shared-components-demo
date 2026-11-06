@@ -4,3 +4,11 @@ import { IS_GPUIX } from 'gpuix-svelte';
 // clickable box with coloured children asks GPUI for its own hitbox. The browser bubbles the click up by
 // itself and has no such attribute; its typecheck would reject it, hence the branch rather than a constant.
 export const own_hitbox = IS_GPUIX ? { hitbox: 'self' as const } : {};
+
+// GPUI takes one family name and, when it is not installed, falls back with every weight drawn regular,
+// so the monospace token names a face each side has: the page ships Geist Mono, a window gets the OS's.
+export const mono = IS_GPUIX
+	? globalThis.process?.platform === 'win32'
+		? 'Consolas'
+		: 'Menlo'
+	: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';

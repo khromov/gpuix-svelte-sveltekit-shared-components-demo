@@ -20,7 +20,7 @@
 		flex-direction: column;
 		gap: 12px;
 		padding: 16px;
-		border-radius: 12px;
+		border-radius: 10px;
 		border-width: 1px;
 		border-style: solid;
 		border-color: var(--border);

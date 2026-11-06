@@ -44,7 +44,7 @@
 	<div class="header">
 		<div class="title">Shared components</div>
 		<Badge tone="accent">{IS_GPUIX ? 'GPUI' : 'DOM'}</Badge>
-		<div class="muted">{window_size.width} × {window_size.height}</div>
+		<div class="size">{window_size.width} × {window_size.height}</div>
 		<div class="spacer"></div>
 		<Tooltip content="Toggle the theme (T)">
 			{#snippet children(hover)}
@@ -168,7 +168,19 @@
 	}
 	.title {
 		font-size: 18px;
-		font-weight: 700;
+		font-weight: 600;
+	}
+	.size {
+		padding: 0 8px;
+		border-radius: 999px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: var(--border);
+		font-family: var(--mono);
+		font-size: 12px;
+		line-height: 20px;
+		white-space: nowrap;
+		color: var(--muted);
 	}
 	.muted {
 		font-size: 13px;
@@ -199,17 +211,18 @@
 	.count {
 		min-width: 32px;
 		text-align: center;
+		font-family: var(--mono);
 		font-size: 18px;
 		font-weight: 600;
 	}
 	.item {
 		padding: 6px 12px;
-		border-radius: 4px;
+		border-radius: 6px;
 		cursor: pointer;
 		white-space: nowrap;
 	}
 	.item:hover {
-		background-color: var(--raised);
+		background-color: var(--raised-hover);
 	}
 	.list {
 		display: flex;
@@ -228,14 +241,14 @@
 		color: var(--ink);
 	}
 	.line:hover {
-		background-color: var(--border);
+		background-color: var(--raised-hover);
 	}
 	.line.compact {
 		padding: 3px 12px;
 	}
 	.line.selected {
-		background-color: var(--accent);
-		color: var(--on-accent);
+		background-color: var(--accent-wash);
+		color: var(--accent-ink);
 	}
 	.scrim {
 		display: flex;
@@ -243,7 +256,7 @@
 		justify-content: center;
 		width: 100%;
 		height: 100%;
-		background-color: #00000088;
+		background-color: #00000099;
 	}
 	.dialog {
 		display: flex;
@@ -253,6 +266,9 @@
 		max-width: 380px;
 		padding: 20px;
 		border-radius: 12px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: var(--border-strong);
 		background-color: var(--panel);
 		color: var(--ink);
 	}

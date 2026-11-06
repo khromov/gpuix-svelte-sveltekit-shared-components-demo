@@ -21,16 +21,17 @@ test.ts                     headless GPUI test: clicks through the Showcase on t
 tsconfig.json               SvelteKit's typecheck, DOM markup          (npm run check)
 tsconfig.gpuix.json         the GPUI typecheck, GPUI markup            (npm run check:gpuix)
 vite.config.ts              SvelteKit + adapter-static, the dev server's file allow list, the one-svelte guard
+static/fonts/                Geist and Geist Mono (variable woff2, OFL.txt beside them) for the page; a window draws the OS font
 src/
   App.svelte                the window's root: palette effect + a Scroller around the Showcase (GPUI-only file)
-  app.css                   what a GPUI window gives a page for free: border-box, a UI font, text { display: inline }
+  app.css                   what a GPUI window gives a page for free: border-box, a font (Geist, from static/fonts), text { display: inline }
   routes/+layout.svelte     the site's root: palette effect + the prerendered :root palette rule
   routes/+layout.ts         prerender = true
   routes/+page.svelte       the home route: the Showcase and a footer with real links
   lib/
     Showcase.svelte         every component in use; shared by the page and the window
     theme.svelte.ts         LIGHT / DARK token palettes, the shared `theme` state, apply_theme()
-    gpui.ts                 own_hitbox: the one place the markup branches on IS_GPUIX
+    gpui.ts                 own_hitbox and the monospace family: the one place that branches on IS_GPUIX
     components/             Button, Badge, Card, Toggle, Kbd
 ```
 
@@ -136,16 +137,20 @@ Deliberately not shared:
   page scrolls itself while the window wraps the Showcase in a `Scroller`.
 - **The page stylesheet.** `src/app.css` gives the page what a GPUI window has by default:
   `box-sizing: border-box`, a UI font, no body margin, and `text { display: inline }` for GPUI's
-  text element should one appear. The layout also prerenders the palette as a `:root` rule so the
+  text element should one appear. The font is Geist, the gpuix-svelte site's, through `@font-face`;
+  the window keeps the OS font, because GPUI draws a registered Geist at one weight only (the
+  variable TTF and the static instances alike), and the weights carry the hierarchy. The layout also prerenders the palette as a `:root` rule so the
   static HTML is not unstyled until hydration; a window needs neither.
 - **The footer.** `+page.svelte` ends with real `<a>` links and `<code>`, elements GPUI does not
   have, so they live in the route rather than the shared code.
 - **Test ids.** `test.ts` finds things by text, and the only `testid`s are props of gpuix-svelte's
   own components, which spell them `data-testid` in the DOM. A `testid` on a shared element would
   fail the DOM typecheck; `src/App.svelte`, being GPUI-only, uses one.
-- **`own_hitbox`** (`src/lib/gpui.ts`), the one branch on `IS_GPUIX` in the markup: GPUI has no
-  event bubbling and a child with a background covers its parent's hitbox, so the Toggle and the
-  list rows spread `hitbox="self"` there and nothing in the DOM.
+- **`own_hitbox` and `mono`** (`src/lib/gpui.ts`), the one place that branches on `IS_GPUIX`: GPUI
+  has no event bubbling and a child with a background covers its parent's hitbox, so the Toggle and
+  the list rows spread `hitbox="self"` there and nothing in the DOM. And GPUI takes a single family
+  name, falling back with every weight drawn regular when it is missing, so the `--mono` token is
+  Menlo or Consolas in a window and Geist Mono (shipped in `static/fonts`) on the page.
 
 ## Writing a component for both
 

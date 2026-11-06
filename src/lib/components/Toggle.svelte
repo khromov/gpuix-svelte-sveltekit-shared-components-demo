@@ -33,7 +33,7 @@
 		width: 38px;
 		height: 22px;
 		border-radius: 11px;
-		background-color: var(--raised);
+		background-color: var(--border-strong);
 	}
 	.track.on {
 		background-color: var(--accent);
@@ -45,12 +45,11 @@
 		width: 16px;
 		height: 16px;
 		border-radius: 8px;
-		background-color: var(--ink);
+		background-color: var(--on-accent);
 		transition: left 150ms;
 	}
 	.knob.on {
 		left: 19px;
-		background-color: var(--on-accent);
 	}
 	.label {
 		font-size: 14px;

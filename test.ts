@@ -12,16 +12,16 @@ check('the badge says GPUI', has('GPUI'));
 const size = native.getWindowSize();
 check('window_size is the viewport', has(`${size.width} × ${size.height}`));
 
-check('the palette landed through set_css_vars', background(), '#1e1e2e');
+check('the palette landed through set_css_vars', background(), '#000000');
 press('tab');
 press('enter');
-check('Tab reaches the first button and Enter presses it', background(), '#eff1f5');
+check('Tab reaches the first button and Enter presses it', background(), '#fafafa');
 click_text('Dark mode');
-check('the theme button flips it back', background(), '#1e1e2e');
+check('the theme button flips it back', background(), '#000000');
 press('t');
-check('and so does the T shortcut', background(), '#eff1f5');
+check('and so does the T shortcut', background(), '#fafafa');
 click_text('Dark theme');
-check('the Toggle drives the same theme state', background(), '#1e1e2e');
+check('the Toggle drives the same theme state', background(), '#000000');
 
 click_text('+');
 click_text('+');

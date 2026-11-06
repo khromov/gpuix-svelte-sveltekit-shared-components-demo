@@ -14,27 +14,34 @@
 		align-items: center;
 		padding: 2px 8px;
 		border-radius: 999px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: var(--border);
 		font-size: 12px;
-		font-weight: 600;
+		font-weight: 500;
 		line-height: 16px;
 		white-space: nowrap;
 		background-color: var(--raised);
 		color: var(--ink);
 	}
 	.badge.accent {
-		background-color: var(--accent);
-		color: var(--on-accent);
+		border-color: var(--accent-wash);
+		background-color: var(--accent-wash);
+		color: var(--accent-ink);
 	}
 	.badge.success {
-		background-color: var(--success);
-		color: var(--on-accent);
+		border-color: var(--success-wash);
+		background-color: var(--success-wash);
+		color: var(--success);
 	}
 	.badge.warning {
-		background-color: var(--warning);
-		color: var(--on-accent);
+		border-color: var(--warning-wash);
+		background-color: var(--warning-wash);
+		color: var(--warning);
 	}
 	.badge.danger {
-		background-color: var(--danger);
-		color: var(--on-accent);
+		border-color: var(--danger-wash);
+		background-color: var(--danger-wash);
+		color: var(--danger);
 	}
 </style>
