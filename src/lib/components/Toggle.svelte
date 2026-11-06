@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { own_hitbox } from '../gpui.ts';
 
-	let { checked, label, onchange }: { checked: boolean; label: string; onchange: (checked: boolean) => void } = $props();
+	let {
+		checked,
+		label,
+		onchange
+	}: { checked: boolean; label: string; onchange: (checked: boolean) => void } = $props();
 
 	const flip = () => onchange(!checked);
 
@@ -12,7 +16,15 @@
 	}
 </script>
 
-<div class="toggle" role="button" aria-label={label} tabindex={0} {...own_hitbox} onclick={flip} onkeydown={keydown}>
+<div
+	class="toggle"
+	role="button"
+	aria-label={label}
+	tabindex={0}
+	{...own_hitbox}
+	onclick={flip}
+	onkeydown={keydown}
+>
 	<div class="track" class:on={checked}>
 		<div class="knob" class:on={checked}></div>
 	</div>

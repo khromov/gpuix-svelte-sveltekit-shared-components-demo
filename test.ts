@@ -1,6 +1,18 @@
 // The GPUI side headless: `npm test` mounts the window's root on gpuix-svelte's test renderer and
 // clicks through every shared component the way a user would, through real hit testing.
-import { mount_headless, find_test_id, find_text, click_text, click_at, hover, press, wait, all_text, check, finish } from 'gpuix-svelte/test';
+import {
+	mount_headless,
+	find_test_id,
+	find_text,
+	click_text,
+	click_at,
+	hover,
+	press,
+	wait,
+	all_text,
+	check,
+	finish
+} from 'gpuix-svelte/test';
 import App from './src/App.svelte';
 
 const { native } = mount_headless(App, { width: 760, height: 520 });
@@ -45,7 +57,11 @@ check('and hides once the pointer leaves', has('Toggle the theme (T)'), false);
 click_text('Actions');
 check('the Popover opens', find_test_id('menu-panel') !== null);
 click_text('Duplicate');
-check('an item runs and closes it', [has('Last action: Duplicate'), find_test_id('menu-panel')], [true, null]);
+check(
+	'an item runs and closes it',
+	[has('Last action: Duplicate'), find_test_id('menu-panel')],
+	[true, null]
+);
 click_text('Actions');
 press('escape');
 check('Escape closes it', find_test_id('menu-panel'), null);

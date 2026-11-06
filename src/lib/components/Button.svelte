@@ -30,7 +30,16 @@
 	}
 </script>
 
-<div class="btn {variant}" class:disabled role="button" tabindex={disabled ? -1 : 0} onclick={press} onkeydown={keydown} {onmouseenter} {onmouseleave}>
+<div
+	class="btn {variant}"
+	class:disabled
+	role="button"
+	tabindex={disabled ? -1 : 0}
+	onclick={press}
+	onkeydown={keydown}
+	{onmouseenter}
+	{onmouseleave}
+>
 	{@render children()}
 </div>
 

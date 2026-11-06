@@ -16,7 +16,10 @@
 	// only the badge asks which renderer it is on.
 	const ACTIONS = ['Rename', 'Duplicate', 'Archive'];
 	const TONES: Tone[] = ['neutral', 'accent', 'success', 'warning', 'danger'];
-	const ITEMS = Array.from({ length: 40 }, (_, i) => ({ name: `Item ${i + 1}`, tone: TONES[i % TONES.length] }));
+	const ITEMS = Array.from({ length: 40 }, (_, i) => ({
+		name: `Item ${i + 1}`,
+		tone: TONES[i % TONES.length]
+	}));
 
 	let count = $state(0);
 	let notifications = $state(true);
@@ -48,7 +51,9 @@
 		<div class="spacer"></div>
 		<Tooltip content="Toggle the theme (T)">
 			{#snippet children(hover)}
-				<Button {...hover} onclick={() => (theme.dark = !theme.dark)}>{theme.dark ? 'Light mode' : 'Dark mode'}</Button>
+				<Button {...hover} onclick={() => (theme.dark = !theme.dark)}
+					>{theme.dark ? 'Light mode' : 'Dark mode'}</Button
+				>
 			{/snippet}
 		</Tooltip>
 		<Popover open={menu} onclose={() => (menu = false)} testid="menu">
@@ -110,7 +115,9 @@
 				</div>
 				<div class="muted">Last action: {last_action}</div>
 				<div class="muted">
-					{IS_GPUIX ? 'This is a native GPUI window, drawn on the GPU.' : 'This page was prerendered by SvelteKit and hydrated in your browser.'}
+					{IS_GPUIX
+						? 'This is a native GPUI window, drawn on the GPU.'
+						: 'This page was prerendered by SvelteKit and hydrated in your browser.'}
 				</div>
 			</Card>
 		</div>
@@ -123,7 +130,13 @@
 				<div class="list">
 					<Scroller gap={4} pad="0 10px 0 0" testid="list">
 						{#each ITEMS as item (item.name)}
-							<div class="line" class:compact class:selected={selected === item.name} {...own_hitbox} onclick={() => (selected = item.name)}>
+							<div
+								class="line"
+								class:compact
+								class:selected={selected === item.name}
+								{...own_hitbox}
+								onclick={() => (selected = item.name)}
+							>
 								<div>{item.name}</div>
 								<Badge tone={item.tone}>{item.tone}</Badge>
 							</div>
@@ -140,7 +153,10 @@
 			<div class="scrim" onclick={() => (dialog = false)}>
 				<div class="dialog" onclick={(e) => e.stopPropagation()}>
 					<div class="dialog-title">A dialog in a Portal</div>
-					<div class="muted">Rendered inside the Showcase and painted above everything. Escape, Close or a click outside closes it.</div>
+					<div class="muted">
+						Rendered inside the Showcase and painted above everything. Escape, Close or a click outside closes
+						it.
+					</div>
 					<Button variant="primary" onclick={() => (dialog = false)}>Close</Button>
 				</div>
 			</div>

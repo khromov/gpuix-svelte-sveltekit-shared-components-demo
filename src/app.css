@@ -26,7 +26,13 @@ body {
 }
 
 body {
-	font: 14px 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+	font:
+		14px 'Geist',
+		ui-sans-serif,
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	background-color: var(--bg);
