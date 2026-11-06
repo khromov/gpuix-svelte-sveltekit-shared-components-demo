@@ -1,0 +1,21 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+}
+
+body {
+	font: 14px system-ui, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	background-color: var(--bg);
+	color: var(--ink);
+}
+
+text {
+	display: inline;
+}

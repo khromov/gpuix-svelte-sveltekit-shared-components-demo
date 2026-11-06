@@ -1,0 +1,16 @@
+{
+	// SvelteKit's typecheck: the routes and the shared components as DOM markup (svelteHTML). The GPUI
+	// root, src/App.svelte, uses GPUI attributes and is typed by tsconfig.gpuix.json instead.
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"strict": true,
+		// gpuix-svelte is a link to a source checkout with its own nested svelte; its components must be
+		// typed against this project's svelte, or two copies of `Snippet` meet.
+		"paths": {
+			"svelte": ["./node_modules/svelte"],
+			"svelte/*": ["./node_modules/svelte/*"]
+		}
+	},
+	"include": ["src", "vite.config.ts"],
+	"exclude": ["src/App.svelte"]
+}

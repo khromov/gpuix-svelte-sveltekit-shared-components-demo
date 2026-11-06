@@ -1,0 +1,25 @@
+{
+	// The GPUI typecheck (npm run check:gpuix): the desktop entry, its test, the window's root and the shared
+	// components as GPUI markup (gpuixHTML). `customConditions` resolves gpuix-svelte to its GPUI entry, and
+	// `paths` points svelte at the custom-renderer build nested in the package, as a scaffolded app does.
+	"compilerOptions": {
+		"target": "esnext",
+		"lib": ["esnext"],
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"customConditions": ["custom-renderer", "development"],
+		"types": ["node", "gpuix-svelte/html"],
+		"strict": true,
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true,
+		"skipLibCheck": true,
+		"paths": {
+			"svelte": ["./node_modules/gpuix-svelte/node_modules/svelte"],
+			"svelte/*": ["./node_modules/gpuix-svelte/node_modules/svelte/*"]
+		}
+	},
+	"svelteOptions": { "namespace": "gpuixHTML" },
+	"include": ["app.ts", "test.ts", "svelte.d.ts", "src/App.svelte", "src/lib/**/*.ts", "src/lib/**/*.svelte"]
+}
