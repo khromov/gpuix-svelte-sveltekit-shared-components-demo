@@ -36,7 +36,7 @@ and `npm run check:all` typechecks both sides.
 - `src/lib/theme.svelte.ts` holds the palette; one `set_css_vars` call applies it on both renderers.
 
 The trick is in gpuix-svelte's package exports. Without the `custom-renderer` condition, which only
-its desktop tooling sets, `gpuix-svelte` resolves to a DOM twin of the package and its components to
+its desktop tooling sets, `gpuix-svelte` resolves to the DOM build of the package and its components to
 DOM versions, so SvelteKit gets the browser side with no configuration. `IS_GPUIX` tells a component
 which side it is on; the one place this repo uses it is a `hitbox="self"` attribute that GPUI needs
 and the DOM does not have (`src/lib/gpui.ts`).
