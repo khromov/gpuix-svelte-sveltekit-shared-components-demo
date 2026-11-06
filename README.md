@@ -5,9 +5,8 @@ DOM, and as a native desktop window on GPUI (Zed's GPU-accelerated UI framework)
 [gpuix-svelte](https://github.com/khromov/gpuix-svelte). Same `.svelte` files, same props, same
 `<style>` blocks, same palette; only the shell around them differs.
 
-| Browser (SvelteKit, prerendered) | Desktop (gpuix-svelte, GPUI) |
-| --- | --- |
-| `npm run dev` | `npm start` |
+`npm run dev` (or `npm start`) opens both at once: the site in your browser and the window on your
+desktop, each hot-reloading as you save. `npm run dev:web` and `npm run dev:gpuix` start one of them.
 
 The site and the window both render `src/lib/Showcase.svelte`, which uses every component in the
 library plus the four that gpuix-svelte ships (`Scroller`, `Tooltip`, `Popover`, `Portal`). The
@@ -16,7 +15,8 @@ badge in the header reads `DOM` or `GPUI`, from gpuix-svelte's `IS_GPUIX` consta
 ## Layout
 
 ```
-app.ts                      desktop entry: render_hot(App) through gpuix-svelte's bin (npm start)
+dev.ts                      npm run dev / npm start: Vite with the browser and the GPUI window together
+app.ts                      desktop entry: render_hot(App) through gpuix-svelte's bin (npm run dev:gpuix)
 test.ts                     headless GPUI test: clicks through the Showcase on the test renderer (npm test)
 tsconfig.json               SvelteKit's typecheck, DOM markup          (npm run check)
 tsconfig.gpuix.json         the GPUI typecheck, GPUI markup            (npm run check:gpuix)
@@ -44,11 +44,13 @@ Linux build of `@gpuix/native` opens windows but has no headless renderer.
 ```bash
 npm install
 
-npm run dev          # the site, with Vite's hot reload
+npm run dev          # both: the site in your browser (Vite) and the GPUI window, hot-reloading;
+npm start            # the same thing. Closing the window or Ctrl+C ends both
+npm run dev:web      # only the site
+npm run dev:gpuix    # only the window
 npm run build        # the static site, prerendered into build/
 npm run preview      # serves build/
 
-npm start            # the same components in a native GPUI window (hot-reloads on save)
 npm test             # the GPUI side headless: 20 assertions through real hit testing
 
 npm run check        # SvelteKit's svelte-check
@@ -56,8 +58,8 @@ npm run check:gpuix  # tsc + svelte-check for the GPUI side
 npm run check:all    # both
 ```
 
-`npm start` and `npm test` run `node node_modules/gpuix-svelte/bin/gpuix-svelte.js <entry>`
-rather than the `gpuix-svelte` bin name: the launcher sets the `custom-renderer` export
+`npm run dev:gpuix` and `npm test` run `node node_modules/gpuix-svelte/bin/gpuix-svelte.js <entry>`
+(and `dev.ts` spawns the same) rather than the `gpuix-svelte` bin name: the launcher sets the `custom-renderer` export
 condition and installs the `.svelte` loader, and spelling the path out works whether or not the
 package manager linked a `.bin` entry for a `file:` dependency (npm 11 does).
 
