@@ -8,14 +8,16 @@
 		"#lib/*": "./src/lib/*"
 	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "node dev.ts",
+		"dev:web": "vite dev --open",
+		"dev:gpuix": "node node_modules/gpuix-svelte/bin/gpuix-svelte.js app.ts",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:gpuix": "tsc --noEmit -p tsconfig.gpuix.json && svelte-check --tsconfig ./tsconfig.gpuix.json --diagnostic-sources js,svelte --fail-on-warnings",
 		"check:all": "npm run check && npm run check:gpuix",
-		"start": "node node_modules/gpuix-svelte/bin/gpuix-svelte.js app.ts",
+		"start": "node dev.ts",
 		"test": "node node_modules/gpuix-svelte/bin/gpuix-svelte.js test.ts"
 	},
 	"dependencies": {
