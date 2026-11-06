@@ -6,8 +6,8 @@ import { mono } from './gpui.ts';
 // The values are the gpuix-svelte site's: surfaces a step lighter per layer, hairline borders, one orange.
 export const DARK = {
 	bg: '#000000',
-	panel: '#0a0a0a',
-	raised: '#1a1a1a',
+	panel: '#111111',
+	raised: '#1c1c1c',
 	'raised-hover': '#262626',
 	border: '#242424',
 	'border-strong': '#404040',
@@ -26,7 +26,7 @@ export const DARK = {
 	mono,
 	'tooltip-surface': '#ededed',
 	'tooltip-ink': '#000000',
-	'popover-surface': '#1a1a1a',
+	'popover-surface': '#1c1c1c',
 	'popover-border': '#404040',
 	'popover-ink': '#ededed',
 	'scroller-thumb': '#404040',
