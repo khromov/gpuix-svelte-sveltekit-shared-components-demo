@@ -13,9 +13,9 @@ import {
 	check,
 	finish
 } from 'gpuix-svelte/test';
-import App from './src/App.svelte';
+import GpuixSvelteApp from './src/GpuixSvelteApp.svelte';
 
-const { native } = mount_headless(App, { width: 760, height: 520 });
+const { native } = mount_headless(GpuixSvelteApp, { width: 760, height: 520 });
 
 const background = () => find_test_id('window')?.style?.backgroundColor;
 const has = (text: string) => find_text(text) !== null;

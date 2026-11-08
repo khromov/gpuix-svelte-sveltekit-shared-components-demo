@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { IS_GPUIX, type MotionProps } from 'gpuix-svelte';
 	import { own_hitbox, type DivProps } from '../gpui.ts';
 
 	let {
@@ -11,6 +12,20 @@
 		{ checked: boolean; label: string; onchange: (checked: boolean) => void },
 		'role' | 'aria-label' | 'tabindex' | 'hitbox' | 'onclick' | 'onkeydown'
 	> = $props();
+
+	// GPUI ignores CSS `transition`, so there the knob slides through `motion`, which tweens `left`
+	// natively; the browser keeps the `transition` rule below. Same distance, duration and curve.
+	const slide = $derived(
+		IS_GPUIX
+			? {
+					motion: {
+						initial: false,
+						animate: { left: checked ? 19 : 3 },
+						transition: { duration: 0.15, ease: 'ease' }
+					} satisfies MotionProps
+				}
+			: {}
+	);
 
 	const flip = () => onchange(!checked);
 
@@ -32,7 +47,7 @@
 	onkeydown={keydown}
 >
 	<div class="track" class:on={checked}>
-		<div class="knob" class:on={checked}></div>
+		<div class="knob" class:on={checked} {...slide}></div>
 	</div>
 	<div class="label">{label}</div>
 </div>

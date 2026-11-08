@@ -31,15 +31,16 @@ and `npm run check:all` typechecks both sides.
 - `src/lib/components/` is the library: Button, Badge, Card, Toggle and Kbd. `src/lib/Showcase.svelte`
   puts them all on one screen, together with the Scroller, Tooltip, Popover and Portal that
   gpuix-svelte ships.
-- `src/routes/` is the SvelteKit side, prerendered with adapter-static. `app.ts` and `src/App.svelte`
-  are the desktop side, started through gpuix-svelte's launcher.
+- `src/routes/` is the SvelteKit side, prerendered with adapter-static. `app.ts` and
+  `src/GpuixSvelteApp.svelte` are the desktop side, started through gpuix-svelte's launcher.
 - `src/lib/theme.svelte.ts` holds the palette; one `set_css_vars` call applies it on both renderers.
 
 The trick is in gpuix-svelte's package exports. Without the `custom-renderer` condition, which only
 its desktop tooling sets, `gpuix-svelte` resolves to the DOM build of the package and its components to
 DOM versions, so SvelteKit gets the browser side with no configuration. `IS_GPUIX` tells a component
-which side it is on; the one place this repo uses it is a `hitbox="self"` attribute that GPUI needs
-and the DOM does not have (`src/lib/gpui.ts`).
+which side it is on. The components use it for two attributes that GPUI needs and the DOM does not
+have: `hitbox="self"` (`src/lib/gpui.ts`), and the `motion` that slides the Toggle's knob, since GPUI
+ignores CSS `transition`.
 
 ## Writing components that work on both
 
