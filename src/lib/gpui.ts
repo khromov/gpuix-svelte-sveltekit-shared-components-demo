@@ -1,4 +1,10 @@
 import { IS_GPUIX } from 'gpuix-svelte';
+import type { DivAttributes } from '#attributes';
+
+// A component's own props, plus the attributes of the div it spreads the rest onto. `#attributes` resolves
+// on the same `custom-renderer` condition as gpuix-svelte, so each typecheck sees its own renderer's div,
+// and anything passed through has to suit both. `Fixed` names what the component sets on the div itself.
+export type DivProps<Own, Fixed extends string = never> = Own & Omit<DivAttributes, keyof Own | Fixed>;
 
 // GPUI has no event bubbling, and a child that paints a background covers its parent's hitbox, so a
 // clickable box with coloured children asks GPUI for its own hitbox. The browser bubbles the click up by

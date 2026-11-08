@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { own_hitbox } from '../gpui.ts';
+	import { own_hitbox, type DivProps } from '../gpui.ts';
 
 	let {
 		checked,
 		label,
-		onchange
-	}: { checked: boolean; label: string; onchange: (checked: boolean) => void } = $props();
+		onchange,
+		class: className,
+		...rest
+	}: DivProps<
+		{ checked: boolean; label: string; onchange: (checked: boolean) => void },
+		'role' | 'aria-label' | 'tabindex' | 'hitbox' | 'onclick' | 'onkeydown'
+	> = $props();
 
 	const flip = () => onchange(!checked);
 
@@ -17,7 +22,8 @@
 </script>
 
 <div
-	class="toggle"
+	{...rest}
+	class={['toggle', className]}
 	role="button"
 	aria-label={label}
 	tabindex={0}

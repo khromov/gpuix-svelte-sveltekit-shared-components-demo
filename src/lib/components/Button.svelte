@@ -1,22 +1,24 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { DivProps } from '../gpui.ts';
 
 	let {
 		children,
 		variant = 'default',
 		disabled = false,
 		onclick,
-		onmouseenter,
-		onmouseleave
-	}: {
-		children: Snippet;
-		variant?: 'default' | 'primary' | 'ghost' | 'danger';
-		disabled?: boolean;
-		onclick?: () => void;
-		/** Tooltip hands these to its trigger through `children(hover)`; spread them on for the tip to work. */
-		onmouseenter?: () => void;
-		onmouseleave?: () => void;
-	} = $props();
+		class: className,
+		...rest
+	}: DivProps<
+		{
+			children: Snippet;
+			variant?: 'default' | 'primary' | 'ghost' | 'danger';
+			disabled?: boolean;
+			/** Runs on a click and on Enter or Space, unless the button is disabled. */
+			onclick?: () => void;
+		},
+		'role' | 'tabindex' | 'onkeydown'
+	> = $props();
 
 	function press() {
 		if (!disabled) onclick?.();
@@ -31,14 +33,12 @@
 </script>
 
 <div
-	class="btn {variant}"
-	class:disabled
+	{...rest}
+	class={['btn', variant, { disabled }, className]}
 	role="button"
 	tabindex={disabled ? -1 : 0}
 	onclick={press}
 	onkeydown={keydown}
-	{onmouseenter}
-	{onmouseleave}
 >
 	{@render children()}
 </div>

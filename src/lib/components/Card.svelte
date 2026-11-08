@@ -1,10 +1,17 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { DivProps } from '../gpui.ts';
 
-	let { title, children, actions }: { title: string; children: Snippet; actions?: Snippet } = $props();
+	let {
+		title,
+		children,
+		actions,
+		class: className,
+		...rest
+	}: DivProps<{ title: string; children: Snippet; actions?: Snippet }> = $props();
 </script>
 
-<div class="card">
+<div {...rest} class={['card', className]}>
 	<div class="head">
 		<div class="title">{title}</div>
 		{#if actions}

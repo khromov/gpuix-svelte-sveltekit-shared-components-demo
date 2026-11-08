@@ -5,7 +5,11 @@
 	"type": "module",
 	"imports": {
 		"#lib": "./src/lib/index.js",
-		"#lib/*": "./src/lib/*"
+		"#lib/*": "./src/lib/*",
+		"#attributes": {
+			"custom-renderer": "./src/lib/attributes/gpui.ts",
+			"default": "./src/lib/attributes/dom.ts"
+		}
 	},
 	"scripts": {
 		"dev": "node dev.ts",

@@ -49,5 +49,10 @@ typechecks keep you honest: `npm run check` types the markup as DOM, `npm run ch
 and the shared components have to pass both. The full set of rules is in gpuix-svelte's
 [docs](https://github.com/khromov/gpuix-svelte/blob/main/docs/dom.md).
 
+Each component spreads the props it does not use itself onto its root `div`, typed with `DivProps` from
+`src/lib/gpui.ts`. The div's attributes come from `#attributes`, which resolves on the same
+`custom-renderer` condition as gpuix-svelte, so each typecheck sees its own renderer's div: `title`
+passes the DOM check and fails the GPUI one, `testid` the reverse, and only what suits both passes both.
+
 Fonts and scrollbars differ between a browser and GPUI, so the two never match to the pixel.
 Everything else does.

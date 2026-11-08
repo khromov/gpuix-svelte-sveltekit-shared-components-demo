@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { DivProps } from '../gpui.ts';
 
-	let { children }: { children: Snippet } = $props();
+	let { children, class: className, ...rest }: DivProps<{ children: Snippet }> = $props();
 </script>
 
-<div class="kbd">{@render children()}</div>
+<div {...rest} class={['kbd', className]}>{@render children()}</div>
 
 <style>
 	.kbd {

@@ -1,12 +1,20 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-
+<script lang="ts" module>
 	export type Tone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
-
-	let { children, tone = 'neutral' }: { children: Snippet; tone?: Tone } = $props();
 </script>
 
-<div class="badge {tone}">{@render children()}</div>
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+	import type { DivProps } from '../gpui.ts';
+
+	let {
+		children,
+		tone = 'neutral',
+		class: className,
+		...rest
+	}: DivProps<{ children: Snippet; tone?: Tone }> = $props();
+</script>
+
+<div {...rest} class={['badge', tone, className]}>{@render children()}</div>
 
 <style>
 	.badge {
