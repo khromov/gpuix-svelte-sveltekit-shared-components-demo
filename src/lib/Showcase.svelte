@@ -130,8 +130,8 @@
 		<div class="size">{window_size.width} × {window_size.height}</div>
 		<div class="spacer"></div>
 		<Tooltip content="Toggle the theme (T)">
-			{#snippet children(trigger)}
-				<Button {...trigger} {...shortcut('T')} onclick={() => (theme.dark = !theme.dark)}
+			{#snippet children(hover, focus)}
+				<Button {...hover} {...focus} {...shortcut('T')} onclick={() => (theme.dark = !theme.dark)}
 					>{theme.dark ? 'Light mode' : 'Dark mode'}</Button
 				>
 			{/snippet}
@@ -200,8 +200,8 @@
 						<Badge {tone}>{tone}</Badge>
 					{/each}
 					<Tooltip content="A tooltip on a badge" side="bottom">
-						{#snippet children(trigger)}
-							<Badge tone="accent" tabindex={0} {...trigger}>hover or focus me</Badge>
+						{#snippet children(hover, focus)}
+							<Badge tone="accent" tabindex={0} {...hover} {...focus}>hover or focus me</Badge>
 						{/snippet}
 					</Tooltip>
 				</div>
