@@ -52,4 +52,7 @@
 		background-color: var(--danger-wash);
 		color: var(--danger);
 	}
+	.badge:focus-visible {
+		border-color: var(--ink);
+	}
 </style>

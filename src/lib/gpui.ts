@@ -1,4 +1,4 @@
-import { IS_GPUIX } from 'gpuix-svelte';
+import { IS_GPUIX, focus_element } from 'gpuix-svelte';
 import type { DivAttributes } from '#attributes';
 
 // A component's own props, plus the attributes of the div it spreads the rest onto. `#attributes` resolves
@@ -10,6 +10,32 @@ export type DivProps<Own, Fixed extends string = never> = Own & Omit<DivAttribut
 // clickable box with coloured children asks GPUI for its own hitbox. The browser bubbles the click up by
 // itself and has no such attribute; its typecheck would reject it, hence the branch rather than a constant.
 export const own_hitbox = IS_GPUIX ? { hitbox: 'self' as const } : {};
+
+type DomAria = {
+	'aria-checked'?: boolean;
+	'aria-disabled'?: boolean;
+	'aria-modal'?: boolean;
+	'aria-haspopup'?: 'menu';
+};
+
+// GPUI's accessibility tree has none of these yet and its typecheck rejects them, so only the browser gets them.
+export const dom_aria = (attrs: DomAria) => (IS_GPUIX ? {} : attrs);
+
+// The browser has `aria-keyshortcuts` for this and GPUI does not, so a window says it in the description.
+export const shortcut = (keys: string) =>
+	IS_GPUIX ? { 'aria-description': `Shortcut: ${keys}` } : { 'aria-keyshortcuts': keys };
+
+/** What `focus_element` takes on the renderer this runs on, which is what an `{@attach}` hands over there. */
+export type FocusTarget = Parameters<typeof focus_element>[0];
+
+// `autofocus` takes focus on mount in GPUI, but in a browser Svelte leaves focus where it is unless nothing
+// has it, so there a menu or dialog takes it once its layer has moved into the document.
+export function take_focus(node: FocusTarget) {
+	if (!IS_GPUIX) queueMicrotask(() => focus_element(node));
+}
+
+// GPUI names keys `down` and `tab`, the browser `ArrowDown` and `Tab`.
+export const is_key = (e: { key?: string }, gpui: string, dom: string) => e.key === gpui || e.key === dom;
 
 // GPUI takes one family name and, when it is not installed, falls back with every weight drawn regular,
 // so the monospace token names a face each side has: the page ships Geist Mono, a window gets the OS's.

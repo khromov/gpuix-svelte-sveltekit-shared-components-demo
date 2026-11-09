@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { IS_GPUIX, type MotionProps } from 'gpuix-svelte';
-	import { own_hitbox, type DivProps } from '../gpui.ts';
+	import { dom_aria, own_hitbox, type DivProps } from '../gpui.ts';
 
 	let {
 		checked,
@@ -10,8 +10,13 @@
 		...rest
 	}: DivProps<
 		{ checked: boolean; label: string; onchange: (checked: boolean) => void },
-		'role' | 'aria-label' | 'tabindex' | 'hitbox' | 'onclick' | 'onkeydown'
+		'role' | 'aria-label' | 'aria-valuetext' | 'tabindex' | 'hitbox' | 'onclick' | 'onkeydown'
 	> = $props();
+
+	// GPUI has no `aria-checked` yet, so there the state goes out as the switch's value.
+	const state = $derived(
+		IS_GPUIX ? { 'aria-valuetext': checked ? 'on' : 'off' } : dom_aria({ 'aria-checked': checked })
+	);
 
 	// GPUI ignores CSS `transition`, so there the knob slides through `motion`, which tweens `left`
 	// natively; the browser keeps the `transition` rule below. Same distance, duration and curve.
@@ -39,8 +44,9 @@
 <div
 	{...rest}
 	class={['toggle', className]}
-	role="button"
+	role="switch"
 	aria-label={label}
+	{...state}
 	tabindex={0}
 	{...own_hitbox}
 	onclick={flip}
@@ -58,15 +64,21 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 10px;
+		border-radius: 6px;
 		cursor: pointer;
 		user-select: none;
+	}
+	.toggle:focus-visible {
+		outline-width: 2px;
+		outline-color: var(--ink);
+		outline-offset: 2px;
 	}
 	.track {
 		position: relative;
 		width: 38px;
 		height: 22px;
 		border-radius: 11px;
-		background-color: var(--border-strong);
+		background-color: var(--track);
 	}
 	.track.on {
 		background-color: var(--accent);

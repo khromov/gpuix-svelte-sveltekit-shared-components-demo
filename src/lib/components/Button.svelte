@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { DivProps } from '../gpui.ts';
+	import { dom_aria, type DivProps } from '../gpui.ts';
 
 	let {
 		children,
@@ -36,6 +36,7 @@
 	{...rest}
 	class={['btn', variant, { disabled }, className]}
 	role="button"
+	{...dom_aria({ 'aria-disabled': disabled || undefined })}
 	tabindex={disabled ? -1 : 0}
 	onclick={press}
 	onkeydown={keydown}

@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { IS_GPUIX, on_window_key, window_size } from 'gpuix-svelte';
+	import {
+		IS_GPUIX,
+		focus_element,
+		focus_next_within,
+		focus_previous_within,
+		focused_element,
+		on_window_key,
+		scroll_into_view,
+		window_size
+	} from 'gpuix-svelte';
 	import Scroller from 'gpuix-svelte/components/Scroller.svelte';
 	import Portal from 'gpuix-svelte/components/Portal.svelte';
 	import Tooltip from 'gpuix-svelte/components/Tooltip.svelte';
@@ -10,7 +19,14 @@
 	import Kbd from './components/Kbd.svelte';
 	import Toggle from './components/Toggle.svelte';
 	import { theme } from './theme.svelte.ts';
-	import { own_hitbox } from './gpui.ts';
+	import { dom_aria, is_key, own_hitbox, shortcut, take_focus, type FocusTarget } from './gpui.ts';
+
+	type KeyEvent = {
+		key?: string;
+		shiftKey?: boolean;
+		modifiers?: { shift?: boolean };
+		preventDefault: () => void;
+	};
 
 	// Every component in use, once. The SvelteKit home page and the GPUI window both render this;
 	// only the badge asks which renderer it is on.
@@ -29,42 +45,122 @@
 	let last_action = $state('nothing yet');
 	let dialog = $state(false);
 
+	// The list is one tab stop, the selected row (or the first), and the arrow keys walk it.
+	const active = $derived(selected ?? ITEMS[0].name);
+	const rows: Record<string, FocusTarget> = {};
+	let menu_node: FocusTarget = null;
+	let dialog_node: FocusTarget = null;
+	// What had focus when a menu or dialog opened, so closing it puts focus back there.
+	let menu_opener: FocusTarget = null;
+	let dialog_opener: FocusTarget = null;
+
 	$effect(() =>
 		on_window_key('keydown', (e) => {
 			if (e.editing) return;
 			if (e.key === 't') theme.dark = !theme.dark;
-			if (e.key === 'escape') dialog = false;
+			if (e.key === 'escape' && dialog) close_dialog();
 		})
 	);
 
+	function toggle_menu() {
+		if (menu) return void (menu = false);
+		menu_opener = focused_element();
+		menu = true;
+	}
+
+	function close_menu() {
+		menu = false;
+		focus_element(menu_opener);
+	}
+
 	function run(action: string) {
 		last_action = action;
-		menu = false;
+		close_menu();
+	}
+
+	function menu_key(e: KeyEvent, action: string) {
+		if (is_key(e, 'down', 'ArrowDown')) focus_next_within(menu_node);
+		else if (is_key(e, 'up', 'ArrowUp')) focus_previous_within(menu_node);
+		else if (is_key(e, 'enter', 'Enter') || is_key(e, 'space', ' ')) run(action);
+		else if (is_key(e, 'escape', 'Escape') || is_key(e, 'tab', 'Tab')) close_menu();
+		else return;
+		e.preventDefault();
+	}
+
+	function select(index: number) {
+		const item = ITEMS[Math.max(0, Math.min(ITEMS.length - 1, index))];
+		selected = item.name;
+		focus_element(rows[item.name]);
+		scroll_into_view(rows[item.name]);
+	}
+
+	function row_key(e: KeyEvent, index: number) {
+		if (is_key(e, 'down', 'ArrowDown')) select(index + 1);
+		else if (is_key(e, 'up', 'ArrowUp')) select(index - 1);
+		else if (is_key(e, 'home', 'Home')) select(0);
+		else if (is_key(e, 'end', 'End')) select(ITEMS.length - 1);
+		else if (is_key(e, 'enter', 'Enter') || is_key(e, 'space', ' ')) selected = ITEMS[index].name;
+		else return;
+		e.preventDefault();
+	}
+
+	function open_dialog() {
+		dialog_opener = focused_element();
+		dialog = true;
+	}
+
+	function close_dialog() {
+		dialog = false;
+		focus_element(dialog_opener);
+	}
+
+	// Tab cycles inside the dialog rather than reaching the page behind it.
+	function trap(e: KeyEvent) {
+		if (!is_key(e, 'tab', 'Tab')) return;
+		e.preventDefault();
+		if (e.shiftKey || e.modifiers?.shift) focus_previous_within(dialog_node);
+		else focus_next_within(dialog_node);
 	}
 </script>
 
 <div class="showcase">
 	<div class="header">
-		<div class="title">Shared components</div>
+		<div class="title" role="heading" aria-level={1}>Shared components</div>
 		<Badge tone="accent">{IS_GPUIX ? 'GPUI' : 'DOM'}</Badge>
 		<div class="size">{window_size.width} × {window_size.height}</div>
 		<div class="spacer"></div>
 		<Tooltip content="Toggle the theme (T)">
-			{#snippet children(hover)}
-				<Button {...hover} onclick={() => (theme.dark = !theme.dark)}
+			{#snippet children(trigger)}
+				<Button {...trigger} {...shortcut('T')} onclick={() => (theme.dark = !theme.dark)}
 					>{theme.dark ? 'Light mode' : 'Dark mode'}</Button
 				>
 			{/snippet}
 		</Tooltip>
 		<Popover open={menu} onclose={() => (menu = false)} testid="menu">
-			<Button onclick={() => (menu = !menu)}>Actions</Button>
+			<Button aria-expanded={menu} {...dom_aria({ 'aria-haspopup': 'menu' })} onclick={toggle_menu}
+				>Actions</Button
+			>
 			{#snippet content()}
-				{#each ACTIONS as action (action)}
-					<div class="item" onclick={() => run(action)}>{action}</div>
-				{/each}
+				<div class="menu" role="menu" aria-label="Actions" {@attach (node) => void (menu_node = node)}>
+					{#each ACTIONS as action, i (action)}
+						<!-- An open menu takes focus, so the keyboard can walk it. -->
+						<!-- svelte-ignore a11y_autofocus -->
+						<div
+							class="item"
+							role="menuitem"
+							tabindex={0}
+							autofocus={i === 0}
+							{@attach i === 0 && take_focus}
+							onclick={() => run(action)}
+							onkeydown={(e) => menu_key(e, action)}
+						>
+							{action}
+						</div>
+					{/each}
+				</div>
 			{/snippet}
 		</Popover>
-		<Button variant="primary" onclick={() => (dialog = true)}>Open dialog</Button>
+		<Button variant="primary" onclick={open_dialog}>Open dialog</Button>
 	</div>
 
 	<div class="cards">
@@ -78,9 +174,9 @@
 					<Button disabled>Disabled</Button>
 				</div>
 				<div class="row">
-					<Button onclick={() => count--}>−</Button>
-					<div class="count">{count}</div>
-					<Button onclick={() => count++}>+</Button>
+					<Button aria-label="Decrease" onclick={() => count--}>−</Button>
+					<div class="count" role="status">{count}</div>
+					<Button aria-label="Increase" onclick={() => count++}>+</Button>
 					<div class="muted">A counter in component state.</div>
 				</div>
 			</Card>
@@ -91,7 +187,9 @@
 				<Toggle checked={notifications} label="Notifications" onchange={(on) => (notifications = on)} />
 				<Toggle checked={theme.dark} label="Dark theme" onchange={(on) => (theme.dark = on)} />
 				<Toggle checked={compact} label="Compact list" onchange={(on) => (compact = on)} />
-				<div class="muted">{notifications ? 'You will be notified.' : 'Notifications are off.'}</div>
+				<div class="muted" role="status">
+					{notifications ? 'You will be notified.' : 'Notifications are off.'}
+				</div>
 			</Card>
 		</div>
 
@@ -102,7 +200,9 @@
 						<Badge {tone}>{tone}</Badge>
 					{/each}
 					<Tooltip content="A tooltip on a badge" side="bottom">
-						<Badge tone="accent">hover me</Badge>
+						{#snippet children(trigger)}
+							<Badge tone="accent" tabindex={0} {...trigger}>hover or focus me</Badge>
+						{/snippet}
 					</Tooltip>
 				</div>
 				<div class="row">
@@ -113,7 +213,7 @@
 					<Kbd>Tab</Kbd>
 					<div class="muted">walks the buttons.</div>
 				</div>
-				<div class="muted">Last action: {last_action}</div>
+				<div class="muted" role="status">Last action: {last_action}</div>
 				<div class="muted">
 					{IS_GPUIX
 						? 'This is a native GPUI window, drawn on the GPU.'
@@ -127,15 +227,23 @@
 				{#snippet actions()}
 					<Badge>{ITEMS.length} items</Badge>
 				{/snippet}
-				<div class="list">
+				<div class="list" role="listbox" aria-label="Items">
 					<Scroller gap={4} pad="0 10px 0 0" testid="list">
-						{#each ITEMS as item (item.name)}
+						{#each ITEMS as item, i (item.name)}
 							<div
 								class="line"
 								class:compact
 								class:selected={selected === item.name}
+								role="option"
+								aria-selected={selected === item.name}
+								tabindex={item.name === active ? 0 : -1}
 								{...own_hitbox}
 								onclick={() => (selected = item.name)}
+								onkeydown={(e) => row_key(e, i)}
+								{@attach (node) => {
+									rows[item.name] = node;
+									return () => delete rows[item.name];
+								}}
 							>
 								<div>{item.name}</div>
 								<Badge tone={item.tone}>{item.tone}</Badge>
@@ -143,21 +251,32 @@
 						{/each}
 					</Scroller>
 				</div>
-				<div class="muted">Selected: {selected ?? 'nothing yet'}</div>
+				<div class="muted" role="status">Selected: {selected ?? 'nothing yet'}</div>
 			</Card>
 		</div>
 	</div>
 
 	{#if dialog}
 		<Portal>
-			<div class="scrim" onclick={() => (dialog = false)}>
-				<div class="dialog" onclick={(e) => e.stopPropagation()}>
-					<div class="dialog-title">A dialog in a Portal</div>
+			<!-- Escape closes the dialog from the keyboard; the scrim is the pointer's way out. -->
+			<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+			<div class="scrim" onclick={close_dialog}>
+				<div
+					class="dialog"
+					role="dialog"
+					aria-label="A dialog in a Portal"
+					{...dom_aria({ 'aria-modal': true })}
+					tabindex={-1}
+					onclick={(e) => e.stopPropagation()}
+					onkeydown={trap}
+					{@attach (node) => void (dialog_node = node)}
+				>
+					<div class="dialog-title" role="heading" aria-level={2}>A dialog in a Portal</div>
 					<div class="muted">
 						Rendered inside the Showcase and painted above everything. Escape, Close or a click outside closes
 						it.
 					</div>
-					<Button variant="primary" onclick={() => (dialog = false)}>Close</Button>
+					<Button variant="primary" autofocus {@attach take_focus} onclick={close_dialog}>Close</Button>
 				</div>
 			</div>
 		</Portal>
@@ -237,8 +356,13 @@
 		cursor: pointer;
 		white-space: nowrap;
 	}
-	.item:hover {
+	.item:hover,
+	.item:focus-visible {
 		background-color: var(--raised-hover);
+	}
+	.menu {
+		display: flex;
+		flex-direction: column;
 	}
 	.list {
 		display: flex;
@@ -265,6 +389,11 @@
 	.line.selected {
 		background-color: var(--accent-wash);
 		color: var(--accent-ink);
+	}
+	.line:focus-visible {
+		outline-width: 2px;
+		outline-color: var(--ink);
+		outline-offset: -2px;
 	}
 	.scrim {
 		display: flex;

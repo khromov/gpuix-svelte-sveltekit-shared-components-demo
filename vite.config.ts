@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { realpathSync } from 'node:fs';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
@@ -29,13 +30,13 @@ export default defineConfig({
 		one_svelte,
 		sveltekit({
 			compilerOptions: {
-				runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true),
-				// The shared components are clickable divs, the one element both renderers draw alike; the
-				// advice about keyboard handlers and roles is for pages, and gpuix-svelte's starter filters it too.
-				warningFilter: (warning) => !warning.code.startsWith('a11y_')
+				runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
 			},
 			adapter: adapter()
 		})
 	],
-	server: { fs: { allow: [searchForWorkspaceRoot(process.cwd()), gpuix_svelte] } }
+	server: { fs: { allow: [searchForWorkspaceRoot(process.cwd()), gpuix_svelte] } },
+	// Vitest runs in Node, which would resolve svelte to its server build, where mount() does not exist.
+	resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
+	test: { environment: 'happy-dom', include: ['src/**/*.test.ts'] }
 });

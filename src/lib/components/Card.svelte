@@ -4,16 +4,17 @@
 
 	let {
 		title,
+		level = 2,
 		children,
 		actions,
 		class: className,
 		...rest
-	}: DivProps<{ title: string; children: Snippet; actions?: Snippet }> = $props();
+	}: DivProps<{ title: string; level?: number; children: Snippet; actions?: Snippet }> = $props();
 </script>
 
 <div {...rest} class={['card', className]}>
 	<div class="head">
-		<div class="title">{title}</div>
+		<div class="title" role="heading" aria-level={level}>{title}</div>
 		{#if actions}
 			<div class="actions">{@render actions()}</div>
 		{/if}

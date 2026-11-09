@@ -10,12 +10,14 @@ Left: the SvelteKit page in a browser. Right: the same components in a GPUI wind
 
 ## Try it
 
-You need Node 24 or newer and a checkout of gpuix-svelte next to this folder. The DOM side of
-gpuix-svelte is not released yet, so this project depends on `file:../gpuix-svelte` and on its
-`feat/dom-target` branch; drop the `-b` once that has merged. The window needs macOS or Windows.
+You need Node 24 or newer and a checkout of gpuix-svelte next to this folder. gpuix-svelte's DOM
+side and its accessibility fixes are not released yet, so this project depends on
+`file:../gpuix-svelte` and on its `fix/a11y-plain-text` branch
+([#74](https://github.com/khromov/gpuix-svelte/pull/74)); drop the `-b` once that has merged. The
+window needs macOS or Windows.
 
 ```bash
-git clone -b feat/dom-target https://github.com/khromov/gpuix-svelte ../gpuix-svelte
+git clone -b fix/a11y-plain-text https://github.com/khromov/gpuix-svelte ../gpuix-svelte
 (cd ../gpuix-svelte && bun install)
 npm install
 npm run dev
@@ -23,8 +25,10 @@ npm run dev
 
 `npm run dev` opens the site in your browser and the GPUI window next to it, both hot-reloading.
 Press `T` in either to switch the theme. `npm run dev:web` or `npm run dev:gpuix` starts one side,
-`npm test` clicks through the GPUI side headlessly, `npm run build` prerenders the site into `build/`,
-and `npm run check:all` typechecks both sides.
+`npm run build` prerenders the site into `build/`, and `npm run check:all` typechecks both sides.
+`npm test` runs both test suites: `test:dom` mounts the Showcase in happy-dom under Vitest, and
+`test:gpuix` clicks through the window headlessly. Each one also checks what a screen reader gets
+and what the keyboard alone can do.
 
 ## How it is put together
 
@@ -57,3 +61,20 @@ passes the DOM check and fails the GPUI one, `testid` the reverse, and only what
 
 Fonts and scrollbars differ between a browser and GPUI, so the two never match to the pixel.
 Everything else does.
+
+## Accessibility
+
+`role` and the `aria-*` attributes GPUI knows reach VoiceOver and other screen readers on both sides,
+so the components use them: Button is a `button`, Toggle a `switch`, Card titles are headings, the
+list is a `listbox` of `option`s and the dialog a `dialog`. The keyboard alone works too. Arrow keys
+walk the menu and the list, the dialog keeps Tab inside it, and a menu or dialog gives focus back to
+the button that opened it when it closes. Svelte's a11y warnings are on, so both typechecks report
+any regression.
+
+GPUI's accessibility tree has no `aria-checked`, `aria-disabled`, `aria-modal`, `aria-haspopup`
+or `aria-keyshortcuts` yet, so `dom_aria()` in `src/lib/gpui.ts` gives those to the browser only.
+In the window, a switch reports `on` or `off` as its value instead, and a disabled button is
+announced like an enabled one. Visible text reaches a screen reader in the window from gpuix-svelte's
+fix for plain text ([#74](https://github.com/khromov/gpuix-svelte/pull/74)) onward; before it,
+VoiceOver hears the controls but none of the text. That PR also adds an accessibility page to
+gpuix-svelte's docs with every attribute GPUI lacks and what to use instead.
